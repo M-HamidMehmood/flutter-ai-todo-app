@@ -11,10 +11,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final _controller = TextEditingController();
   List toDoList = [
-    ['Code With Otabek', true],
-    ['Learn Flutter', true],
-    ['Drink Coffee', false],
-    ['Explore Firebase', false],
+    ['FYP SRS', true],
+    ['Project Design', true],
+    ['Learning Flutter', false],
+    ['Exploring Machine Learning Then do ML Model', false],
   ];
 
   void checkBoxChanged(int index) {
@@ -39,10 +39,10 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepPurple.shade300,
+      backgroundColor: Colors.lightBlueAccent.shade200,
       appBar: AppBar(
-        title: const Text('Simple Todo'),
-        backgroundColor: Colors.deepPurple,
+        title: const Text('Prodigenius – AI Powered Todo'),
+        backgroundColor: Colors.blueAccent,
         foregroundColor: Colors.white,
       ),
       body: ListView.builder(
@@ -68,14 +68,14 @@ class _HomePageState extends State<HomePage> {
                   decoration: InputDecoration(
                     hintText: 'Add a new todo items',
                     filled: true,
-                    fillColor: Colors.deepPurple.shade200,
+                    fillColor: Colors.white,
                     enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.deepPurple),
-                      borderRadius: BorderRadius.circular(15),
+                      borderSide: const BorderSide(color: Colors.lightBlue),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.deepPurple),
-                      borderRadius: BorderRadius.circular(15),
+                      borderSide: const BorderSide(color: Colors.lightBlue),
+                      borderRadius: BorderRadius.circular(9),
                     ),
                   ),
                 ),
