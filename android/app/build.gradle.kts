@@ -44,6 +44,9 @@ android {
 dependencies {
     // Add desugaring dependency
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
+    
+    // Add explicit dependency on flutter_local_notifications
+    implementation("com.dexterous:flutterlocalnotifications:16.3.3")
 }
 
 flutter {
