@@ -1,5 +1,5 @@
 buildscript {
-    val kotlinVersion = "1.9.22"
+    val kotlinVersion = "1.8.22"
     
     repositories {
         google()
@@ -24,9 +24,14 @@ rootProject.layout.buildDirectory.value(newBuildDir)
 subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
-}
-subprojects {
+    
     project.evaluationDependsOn(":app")
+    
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
+    }
 }
 
 tasks.register<Delete>("clean") {
