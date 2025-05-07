@@ -138,14 +138,19 @@ class TaskItem extends StatelessWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: task.getPriorityColor().withOpacity(0.2),
+                              color: CategoryConstants.getCategoryColor(task.category).withOpacity(0.2),
                               borderRadius: BorderRadius.circular(4),
+                              border: Border.all(
+                                color: CategoryConstants.getCategoryColor(task.category).withOpacity(0.5),
+                                width: 1,
+                              ),
                             ),
                             child: Text(
                               task.category,
                               style: TextStyle(
                                 fontSize: 12,
-                                color: task.getPriorityColor(),
+                                fontWeight: FontWeight.bold,
+                                color: CategoryConstants.getCategoryColor(task.category),
                               ),
                             ),
                           ),
@@ -211,9 +216,9 @@ class TaskItem extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.red.withOpacity(0.1),
+                            color: Colors.red.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(4),
-                            border: Border.all(color: Colors.red.withOpacity(0.3)),
+                            border: Border.all(color: Colors.red.withOpacity(0.5), width: 1),
                           ),
                           child: const Text(
                             'OVERDUE',
@@ -235,9 +240,9 @@ class TaskItem extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.orange.withOpacity(0.1),
+                            color: Colors.orange.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(4),
-                            border: Border.all(color: Colors.orange.withOpacity(0.3)),
+                            border: Border.all(color: Colors.orange.withOpacity(0.5), width: 1),
                           ),
                           child: const Text(
                             'SOON',

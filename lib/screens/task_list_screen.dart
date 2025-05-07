@@ -103,6 +103,8 @@ class _TaskListScreenState extends State<TaskListScreen> with SingleTickerProvid
                             ? CategoryConstants.getCategoryColor(category)
                             : Theme.of(context).primaryColor,
                           labelStyle: TextStyle(
+                            fontSize: 14,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                             color: isSelected
                                 ? (category != 'All' 
                                     ? CategoryConstants.getCategoryColor(category)
@@ -112,6 +114,14 @@ class _TaskListScreenState extends State<TaskListScreen> with SingleTickerProvid
                           elevation: isSelected ? 2 : 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
+                            side: BorderSide(
+                              color: isSelected
+                                  ? (category != 'All' 
+                                      ? CategoryConstants.getCategoryColor(category)
+                                      : Theme.of(context).primaryColor)
+                                  : Colors.transparent,
+                              width: 1,
+                            ),
                           ),
                           padding: const EdgeInsets.symmetric(horizontal: UIConstants.defaultPadding),
                         ),
