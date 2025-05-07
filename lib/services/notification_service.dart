@@ -1,6 +1,8 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/foundation.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz_data;
 import '../models/task.dart';
 
 class NotificationService {
@@ -18,6 +20,10 @@ class NotificationService {
     }
 
     try {
+      // Initialize timezone
+      tz_data.initializeTimeZones();
+      final local = tz.local;
+      
       // Request notification permissions
       if (!kIsWeb) {
         await Permission.notification.request();
@@ -55,12 +61,16 @@ class NotificationService {
 
     try {
       // Calculate reminder time (30 minutes before due)
+      final now = DateTime.now();
       final reminderTime = task.dueDate.subtract(const Duration(minutes: 30));
       
       // Don't schedule if reminder time is in the past
-      if (reminderTime.isBefore(DateTime.now())) {
+      if (reminderTime.isBefore(now)) {
         return;
       }
+      
+      // Convert to timezone-aware DateTime
+      final scheduledDate = tz.TZDateTime.from(reminderTime, tz.local);
   
       const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
         'todo_reminder_channel',
@@ -85,7 +95,7 @@ class NotificationService {
         task.id.hashCode, // Notification ID based on task ID
         'Reminder: ${task.title}',
         'Due in 30 minutes. Priority: ${task.getPriorityText()}',
-        reminderTime,
+        scheduledDate,
         platformDetails,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
