@@ -17,7 +17,12 @@ void main() async {
   
   // Initialize notification service
   final notificationService = NotificationService();
-  await notificationService.init();
+  try {
+    await notificationService.init();
+  } catch (e) {
+    print('Failed to initialize notifications: $e');
+    // Continue without notifications
+  }
   
   runApp(
     MultiProvider(
