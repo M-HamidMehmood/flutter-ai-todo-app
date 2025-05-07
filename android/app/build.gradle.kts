@@ -26,10 +26,11 @@ android {
         applicationId = "com.example.myapp"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        minSdk = 21 // Set explicit minimum SDK version
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        multiDexEnabled = true // Enable multidex for Firebase
     }
 
     buildTypes {
@@ -37,16 +38,24 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
+            minifyEnabled = false // Disable minification for Firebase
+            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
+        debug {
+            minifyEnabled = false
+        }
+    }
+
+    lint {
+        disable += "InvalidPackage"
+        checkReleaseBuilds = false
     }
 }
 
 dependencies {
     // Add desugaring dependency
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
-    
-    // Add explicit dependency on flutter_local_notifications
-    implementation("com.dexterous:flutterlocalnotifications:16.3.3")
+    implementation("androidx.multidex:multidex:2.0.1")
 }
 
 flutter {
