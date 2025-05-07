@@ -11,7 +11,7 @@ import '../utils/date_utils.dart';
 class TaskForm extends StatefulWidget {
   final Task? task; // If provided, we're editing an existing task
 
-  const TaskForm({Key? key, this.task}) : super(key: key);
+  const TaskForm({super.key, this.task});
 
   @override
   State<TaskForm> createState() => _TaskFormState();
@@ -311,9 +311,9 @@ class _TaskFormState extends State<TaskForm> {
                       });
                     },
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.resolveWith<Color?>(
-                        (Set<MaterialState> states) {
-                          if (states.contains(MaterialState.selected)) {
+                      backgroundColor: WidgetStateProperty.resolveWith<Color?>(
+                        (Set<WidgetState> states) {
+                          if (states.contains(WidgetState.selected)) {
                             return PriorityConstants.priorityColors[_priority]?.withOpacity(0.2);
                           }
                           return null;

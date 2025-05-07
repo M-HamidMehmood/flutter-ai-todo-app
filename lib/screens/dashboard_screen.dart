@@ -5,7 +5,7 @@ import '../services/export_service.dart';
 import '../constants/app_constants.dart';
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({Key? key}) : super(key: key);
+  const DashboardScreen({super.key});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -203,7 +203,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                   ],
                 ),
               );
-            }).toList(),
+            }),
           ],
         ),
       ),

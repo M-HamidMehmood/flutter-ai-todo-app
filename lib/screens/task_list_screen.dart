@@ -8,7 +8,7 @@ import '../widgets/task_form.dart';
 import '../constants/app_constants.dart';
 
 class TaskListScreen extends StatefulWidget {
-  const TaskListScreen({Key? key}) : super(key: key);
+  const TaskListScreen({super.key});
 
   @override
   State<TaskListScreen> createState() => _TaskListScreenState();
@@ -149,8 +149,8 @@ class _TaskListScreenState extends State<TaskListScreen> with SingleTickerProvid
                 _animationController.forward();
               }
             },
-            child: const Icon(Icons.add),
             tooltip: 'Add Task',
+            child: const Icon(Icons.add),
           ),
         );
       },
