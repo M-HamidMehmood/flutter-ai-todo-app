@@ -308,7 +308,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(UIConstants.cardBorderRadius),
         border: Border.all(
-          color: color.withOpacity(0.2),
+          color: color.withOpacity(0.3),
           width: 1,
         ),
       ),
@@ -317,12 +317,12 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
         children: [
           Row(
             children: [
-              Icon(icon, color: color),
+              Icon(icon, color: color, size: 20),
               const SizedBox(width: UIConstants.smallPadding),
               Text(
                 label,
                 style: TextStyle(
-                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
                   color: color,
                 ),
               ),
@@ -332,7 +332,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
           Text(
             value,
             style: TextStyle(
-              fontSize: 24,
+              fontSize: 28,
               fontWeight: FontWeight.bold,
               color: color,
             ),
