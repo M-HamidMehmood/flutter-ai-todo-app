@@ -169,7 +169,11 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                         const SizedBox(width: UIConstants.smallPadding),
                         Text(
                           category,
-                          style: const TextStyle(fontSize: 14),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
+                          ),
                         ),
                         const Spacer(),
                         Text(
@@ -181,25 +185,40 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                           ),
                         ),
                         const SizedBox(width: UIConstants.smallPadding),
-                        Text(
-                          '($percentage%)',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey.shade600,
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: CategoryConstants.getCategoryColor(category).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: CategoryConstants.getCategoryColor(category).withOpacity(0.3),
+                              width: 1,
+                            ),
+                          ),
+                          child: Text(
+                            '$percentage%',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: CategoryConstants.getCategoryColor(category),
+                            ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 8),
                     LinearProgressIndicator(
                       value: total > 0 ? count / total : 0,
                       backgroundColor: Colors.grey.shade200,
                       valueColor: AlwaysStoppedAnimation<Color>(
                         CategoryConstants.getCategoryColor(category),
                       ),
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: BorderRadius.circular(4),
+                      minHeight: 6,
                     ),
-                    const SizedBox(height: UIConstants.smallPadding),
                   ],
                 ),
               );
