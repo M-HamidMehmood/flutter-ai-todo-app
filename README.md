@@ -1,16 +1,24 @@
-# myapp
+### 1. Core
 
-A new Flutter project.
+- [x] CRUD tasks (title • category • due • priority)
+- [x] "AI Prioritize" — sort list by nearest due date
+- [x] Local reminder 30 min before due (flutter_local_notifications)
+- [x] Dashboard counter (pending / done)
 
-## Getting Started
+### 2. Quick-Win Extras
 
-This project is a starting point for a Flutter application.
+- [x] **Duration Guess** — pre-fill duration via lookup table
+- [x] **Category Filter Chips** — Work | Study | Personal | All
+- [x] **Dark-Mode Toggle** — ThemeMode.system ↔ ThemeMode.dark
+- [x] **Export to CSV** — "Share CSV" button on Dashboard
 
-A few resources to get you started if this is your first Flutter project:
+### 3. Code Tasks
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- [x] Extend **Task** model (int duration)
+- [x] Duration lookup runs when form opens
+- [x] Filter-chip logic in list_screen.dart
+- [x] Theme toggle using Provider _or_ ValueNotifier
+- [x] CSV export + share_plus integration
+- [x] Minimal Material 3 UI polish
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+> **Tip:** mark items with [x] when done so progress is visible in the PR list.
