@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/utils/todo_list.dart';
+import 'package:provider/provider.dart';
+import '../screens/task_list_screen.dart';
+import '../screens/dashboard_screen.dart';
+import '../services/theme_service.dart';
+import '../constants/app_constants.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -9,85 +13,108 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final _controller = TextEditingController();
-  List toDoList = [
-    ['FYP SRS', true],
-    ['Project Design', true],
-    ['Learning Flutter', false],
-    ['Exploring Machine Learning Then do ML Model', false],
+  int _selectedIndex = 0;
+  
+  // List of screens
+  final List<Widget> _screens = [
+    const TaskListScreen(),
+    const DashboardScreen(),
   ];
 
-  void checkBoxChanged(int index) {
-    setState(() {
-      toDoList[index][1] = !toDoList[index][1];
-    });
-  }
-
-  void saveNewTask() {
-    setState(() {
-      toDoList.add([_controller.text, false]);
-      _controller.clear();
-    });
-  }
-
-  void deleteTask(int index) {
-    setState(() {
-      toDoList.removeAt(index);
-    });
-  }
+  final List<Map<String, dynamic>> _navigationItems = [
+    {
+      'icon': Icons.task_alt,
+      'label': 'Tasks',
+      'tooltip': 'View and manage tasks',
+    },
+    {
+      'icon': Icons.dashboard,
+      'label': 'Dashboard',
+      'tooltip': 'View task statistics',
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.lightBlueAccent.shade200,
-      appBar: AppBar(
-        title: const Text('Prodigenius – AI Powered Todo'),
-        backgroundColor: Colors.blueAccent,
-        foregroundColor: Colors.white,
-      ),
-      body: ListView.builder(
-        itemCount: toDoList.length,
-        itemBuilder: (BuildContext context, index) {
-          return TodoList(
-            taskName: toDoList[index][0],
-            taskCompleted: toDoList[index][1],
-            onChanged: (value) => checkBoxChanged(index),
-            deleteFunction: (contex) => deleteTask(index),
-          );
-        },
-      ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Row(
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: TextField(
-                  controller: _controller,
-                  decoration: InputDecoration(
-                    hintText: 'Add a new todo items',
-                    filled: true,
-                    fillColor: Colors.white,
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.lightBlue),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.lightBlue),
-                      borderRadius: BorderRadius.circular(9),
-                    ),
+    return Consumer<ThemeService>(
+      builder: (context, themeService, _) {
+        return Scaffold(
+          body: IndexedStack(
+            index: _selectedIndex,
+            children: _screens,
+          ),
+          bottomNavigationBar: Container(
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, -5),
+                ),
+              ],
+            ),
+            child: BottomNavigationBar(
+              currentIndex: _selectedIndex,
+              onTap: (index) {
+                setState(() {
+                  _selectedIndex = index;
+                });
+              },
+              items: _navigationItems.map((item) {
+                return BottomNavigationBarItem(
+                  icon: Icon(item['icon']),
+                  label: item['label'],
+                  tooltip: item['tooltip'],
+                );
+              }).toList(),
+              selectedFontSize: 12,
+              unselectedFontSize: 12,
+              elevation: 8,
+              type: BottomNavigationBarType.fixed,
+            ),
+          ),
+          // Add theme toggle in app bar's actions
+          appBar: AppBar(
+            title: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.check_circle,
+                    color: Theme.of(context).primaryColor,
                   ),
                 ),
+                const SizedBox(width: UIConstants.smallPadding),
+                const Text('AI Todo App'),
+              ],
+            ),
+            actions: [
+              // Theme toggle
+              Tooltip(
+                message: 'Toggle theme',
+                child: IconButton(
+                  icon: AnimatedSwitcher(
+                    duration: UIConstants.shortAnimationDuration,
+                    child: Icon(
+                      themeService.themeMode == ThemeMode.system
+                          ? Icons.brightness_auto
+                          : Icons.brightness_3,
+                      key: ValueKey<ThemeMode>(themeService.themeMode),
+                    ),
+                  ),
+                  onPressed: () {
+                    themeService.toggleThemeMode();
+                  },
+                ),
               ),
-            ),
-            FloatingActionButton(
-              onPressed: saveNewTask,
-              child: const Icon(Icons.add),
-            ),
-          ],
-        ),
-      ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
