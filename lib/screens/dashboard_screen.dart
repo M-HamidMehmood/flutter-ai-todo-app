@@ -219,6 +219,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                       borderRadius: BorderRadius.circular(4),
                       minHeight: 6,
                     ),
+                    const SizedBox(height: UIConstants.smallPadding),
                   ],
                 ),
               );
