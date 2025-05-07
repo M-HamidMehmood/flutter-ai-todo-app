@@ -96,19 +96,13 @@ class _TaskListScreenState extends State<TaskListScreen> with SingleTickerProvid
                             });
                           },
                           backgroundColor: Colors.grey.shade200,
-                          selectedColor: category != 'All' 
-                            ? CategoryConstants.getCategoryColor(category).withOpacity(0.2)
-                            : Theme.of(context).primaryColor.withOpacity(0.2),
-                          checkmarkColor: category != 'All'
-                            ? CategoryConstants.getCategoryColor(category)
-                            : Theme.of(context).primaryColor,
+                          selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
+                          checkmarkColor: Theme.of(context).primaryColor,
                           labelStyle: TextStyle(
                             fontSize: 14,
                             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                             color: isSelected
-                                ? (category != 'All' 
-                                    ? CategoryConstants.getCategoryColor(category)
-                                    : Theme.of(context).primaryColor)
+                                ? Theme.of(context).primaryColor
                                 : Colors.black87,
                           ),
                           elevation: isSelected ? 2 : 0,
@@ -116,9 +110,7 @@ class _TaskListScreenState extends State<TaskListScreen> with SingleTickerProvid
                             borderRadius: BorderRadius.circular(16),
                             side: BorderSide(
                               color: isSelected
-                                  ? (category != 'All' 
-                                      ? CategoryConstants.getCategoryColor(category)
-                                      : Theme.of(context).primaryColor)
+                                  ? Theme.of(context).primaryColor
                                   : Colors.grey.withOpacity(0.3),
                               width: 1,
                             ),
