@@ -38,11 +38,11 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
-            minifyEnabled = false // Disable minification for Firebase
+            isMinifyEnabled = false // Disable minification for Firebase
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
         debug {
-            minifyEnabled = false
+            isMinifyEnabled = false
         }
     }
 
