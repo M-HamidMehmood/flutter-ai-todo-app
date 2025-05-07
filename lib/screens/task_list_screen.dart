@@ -109,7 +109,7 @@ class _TaskListScreenState extends State<TaskListScreen> with SingleTickerProvid
                                 ? (category != 'All' 
                                     ? CategoryConstants.getCategoryColor(category)
                                     : Theme.of(context).primaryColor)
-                                : Theme.of(context).textTheme.bodyLarge?.color,
+                                : Colors.black87,
                           ),
                           elevation: isSelected ? 2 : 0,
                           shape: RoundedRectangleBorder(
@@ -119,7 +119,7 @@ class _TaskListScreenState extends State<TaskListScreen> with SingleTickerProvid
                                   ? (category != 'All' 
                                       ? CategoryConstants.getCategoryColor(category)
                                       : Theme.of(context).primaryColor)
-                                  : Colors.transparent,
+                                  : Colors.grey.withOpacity(0.3),
                               width: 1,
                             ),
                           ),

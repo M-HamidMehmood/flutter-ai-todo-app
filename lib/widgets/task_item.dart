@@ -150,7 +150,7 @@ class TaskItem extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
-                                color: CategoryConstants.getCategoryColor(task.category),
+                                color: darkenColor(CategoryConstants.getCategoryColor(task.category)),
                               ),
                             ),
                           ),
@@ -220,10 +220,10 @@ class TaskItem extends StatelessWidget {
                             borderRadius: BorderRadius.circular(4),
                             border: Border.all(color: Colors.red.withOpacity(0.5), width: 1),
                           ),
-                          child: const Text(
+                          child: Text(
                             'OVERDUE',
                             style: TextStyle(
-                              color: Colors.red,
+                              color: Colors.red.shade800,
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
                             ),
@@ -244,10 +244,10 @@ class TaskItem extends StatelessWidget {
                             borderRadius: BorderRadius.circular(4),
                             border: Border.all(color: Colors.orange.withOpacity(0.5), width: 1),
                           ),
-                          child: const Text(
+                          child: Text(
                             'SOON',
                             style: TextStyle(
-                              color: Colors.orange,
+                              color: Colors.orange.shade900,
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
                             ),
@@ -271,5 +271,16 @@ class TaskItem extends StatelessWidget {
         builder: (context) => TaskForm(task: task),
       ),
     );
+  }
+
+  // Helper method to ensure dark text color
+  Color darkenColor(Color color) {
+    // Check if color is light
+    if (color.computeLuminance() > 0.5) {
+      // If light color, darken it
+      final HSLColor hsl = HSLColor.fromColor(color);
+      return hsl.withLightness((hsl.lightness - 0.3).clamp(0.0, 1.0)).toColor();
+    }
+    return color;
   }
 } 
