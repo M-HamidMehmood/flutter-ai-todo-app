@@ -256,10 +256,15 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                 decoration: BoxDecoration(
                   color: Theme.of(context).primaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Theme.of(context).primaryColor.withOpacity(0.3),
+                    width: 1,
+                  ),
                 ),
                 child: Icon(
                   Icons.file_download,
                   color: Theme.of(context).primaryColor,
+                  size: 24,
                 ),
               ),
               const SizedBox(width: UIConstants.defaultPadding),
@@ -273,20 +278,43 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  Text(
-                    'Export all ${taskService.tasks.length} tasks',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
+                  const SizedBox(height: 4),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(
+                        color: Colors.grey.withOpacity(0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Text(
+                      '${taskService.tasks.length} tasks',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey.shade700,
+                      ),
                     ),
                   ),
                 ],
               ),
               const Spacer(),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 16,
-                color: Theme.of(context).primaryColor,
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Icon(
+                  Icons.arrow_forward,
+                  size: 16,
+                  color: Theme.of(context).primaryColor,
+                ),
               ),
             ],
           ),
