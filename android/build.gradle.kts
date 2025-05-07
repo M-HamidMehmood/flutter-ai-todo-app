@@ -1,12 +1,12 @@
 buildscript {
-    val kotlinVersion = "1.8.22"
+    val kotlinVersion = "1.7.10"
     
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:8.1.0")
+        classpath("com.android.tools.build:gradle:7.3.0")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     }
 }
@@ -30,6 +30,7 @@ subprojects {
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions {
             jvmTarget = "1.8"
+            freeCompilerArgs = listOf("-Xjvm-default=all")
         }
     }
 }

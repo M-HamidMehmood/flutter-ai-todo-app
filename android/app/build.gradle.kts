@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.myapp"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 33  // Setting explicit SDK version
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -28,7 +28,7 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 21 // Set explicit minimum SDK version
-        targetSdk = flutter.targetSdkVersion
+        targetSdk = 33  // Setting explicit target SDK version
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         multiDexEnabled = true // Enable multidex for Firebase
@@ -59,8 +59,9 @@ android {
 
 dependencies {
     // Add desugaring dependency
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")  // Downgrading desugaring version
     implementation("androidx.multidex:multidex:2.0.1")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.10")  // Adding explicit Kotlin stdlib
 }
 
 flutter {
