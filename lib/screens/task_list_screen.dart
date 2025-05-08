@@ -102,7 +102,7 @@ class _TaskListScreenState extends State<TaskListScreen> with SingleTickerProvid
                             fontSize: 14,
                             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                             color: isSelected
-                                ? Theme.of(context).primaryColor
+                                ? Theme.of(context).primaryColor.withOpacity(0.8)
                                 : Colors.black87,
                           ),
                           elevation: isSelected ? 2 : 0,
