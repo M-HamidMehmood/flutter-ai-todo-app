@@ -24,15 +24,33 @@ class ThemeService with ChangeNotifier {
     await prefs.setInt(StorageKeys.themeKey, mode.index);
   }
 
-  // Toggle between system and dark mode
+  // Toggle between light, dark, and system mode
   Future<void> toggleThemeMode() async {
-    _themeMode = _themeMode == ThemeMode.system
-        ? ThemeMode.dark
-        : ThemeMode.system;
+    switch (_themeMode) {
+      case ThemeMode.light:
+        _themeMode = ThemeMode.dark;
+        break;
+      case ThemeMode.dark:
+        _themeMode = ThemeMode.system;
+        break;
+      case ThemeMode.system:
+        _themeMode = ThemeMode.light;
+        break;
+    }
     
     await saveThemeMode(_themeMode);
     notifyListeners();
   }
+
+  // Set a specific theme mode
+  Future<void> setThemeMode(ThemeMode mode) async {
+    _themeMode = mode;
+    await saveThemeMode(_themeMode);
+    notifyListeners();
+  }
+
+  // Check if dark mode is currently active
+  bool get isDarkMode => _themeMode == ThemeMode.dark;
 
   // Get theme data
   ThemeData getLightTheme() => AppTheme.getLightTheme();

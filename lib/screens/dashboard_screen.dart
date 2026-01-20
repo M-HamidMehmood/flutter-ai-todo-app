@@ -53,6 +53,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                 _buildCategoryStatistics(context, taskService),
                 const SizedBox(height: UIConstants.defaultPadding * 1.5),
                 _buildExportButton(context, taskService),
+                const SizedBox(height: UIConstants.defaultPadding),
+                _buildResetDemoButton(context, taskService),
               ],
             ),
           ),
@@ -237,14 +239,52 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
         borderRadius: BorderRadius.circular(UIConstants.cardBorderRadius),
       ),
       child: InkWell(
-        onTap: () {
-          ExportService.exportTasksToCSV(taskService.tasks);
+        onTap: () async {
+          // Show loading indicator
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Exporting tasks to CSV...'),
+              content: Row(
+                children: [
+                  SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  Text('Preparing CSV export...'),
+                ],
+              ),
               behavior: SnackBarBehavior.floating,
+              duration: Duration(seconds: 1),
             ),
           );
+          
+          // Perform export
+          final result = await ExportService.exportTasksToCSV(taskService.tasks);
+          
+          // Show result
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: [
+                    Icon(
+                      result.success ? Icons.check_circle : Icons.error,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(child: Text(result.message)),
+                  ],
+                ),
+                backgroundColor: result.success ? Colors.green : Colors.red,
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          }
         },
         borderRadius: BorderRadius.circular(UIConstants.cardBorderRadius),
         child: Padding(
@@ -366,6 +406,127 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
             ),
           ),
         ],
+      ),
+    );
+  }
+  
+  // ============================================================
+  // RESET DEMO BUTTON - For FYP Presentation
+  // ============================================================
+  Widget _buildResetDemoButton(BuildContext context, TaskService taskService) {
+    return Card(
+      elevation: UIConstants.cardElevation,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(UIConstants.cardBorderRadius),
+      ),
+      color: Colors.orange.shade50,
+      child: InkWell(
+        onTap: () {
+          // Show confirmation dialog
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Row(
+                children: [
+                  Icon(Icons.refresh, color: Colors.orange),
+                  SizedBox(width: 8),
+                  Text('Reset Demo Tasks'),
+                ],
+              ),
+              content: const Text(
+                'This will replace all current tasks with demo tasks for presentation.\n\n'
+                'Demo tasks include:\n'
+                '• 9 sample tasks (Work, Study, Personal)\n'
+                '• Mixed priorities (some intentionally wrong)\n'
+                '• Various due dates\n\n'
+                'Use "AI Prioritize" button to sort them correctly!',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    await taskService.resetToDemoTasks();
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Row(
+                          children: [
+                            Icon(Icons.check_circle, color: Colors.white),
+                            SizedBox(width: 8),
+                            Text('Demo tasks loaded! Go to Tasks and click AI Prioritize'),
+                          ],
+                        ),
+                        behavior: SnackBarBehavior.floating,
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Reset'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+        borderRadius: BorderRadius.circular(UIConstants.cardBorderRadius),
+        child: Padding(
+          padding: const EdgeInsets.all(UIConstants.defaultPadding),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(UIConstants.smallPadding),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Colors.orange.withOpacity(0.3),
+                    width: 1,
+                  ),
+                ),
+                child: const Icon(
+                  Icons.science,
+                  color: Colors.orange,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: UIConstants.defaultPadding),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Reset Demo Tasks',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Load sample tasks for FYP presentation',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: Colors.grey.shade400,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

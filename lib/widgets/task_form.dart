@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../models/task.dart';
 import '../services/task_service.dart';
 import '../services/notification_service.dart';
+import '../services/ai_service.dart';
 import '../constants/app_constants.dart';
 import '../utils/validation_utils.dart';
 import '../utils/date_utils.dart';
@@ -17,52 +18,201 @@ class TaskForm extends StatefulWidget {
 }
 
 class _TaskFormState extends State<TaskForm> {
+  // ============================================================
+  // FORM STATE VARIABLES
+  // ============================================================
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   
+  // Task properties state
   late String _category;
   late DateTime _dueDate;
   late TimeOfDay _dueTime;
   late int _priority;
   late int _duration;
+  
+  // ============================================================
+  // AI STATE VARIABLES
+  // ============================================================
+  // Stores the current AI suggestion based on task title
+  AITaskSuggestion? _aiSuggestion;
+  
+  // Controls visibility of AI suggestions card
+  bool _showAISuggestions = false;
+  
+  // Flag to check if AI is enabled (only for new tasks)
+  bool _isAIEnabled = false;
 
+  // ============================================================
+  // INIT STATE - Initialize all state variables
+  // ============================================================
   @override
   void initState() {
     super.initState();
     
-    // Set default values or use existing task values
     if (widget.task != null) {
-      _titleController.text = widget.task!.title;
-      _category = widget.task!.category;
-      _dueDate = widget.task!.dueDate;
-      _dueTime = TimeOfDay.fromDateTime(widget.task!.dueDate);
-      _priority = widget.task!.priority;
-      _duration = widget.task!.duration;
+      // --------------------------------------------------------
+      // EDITING EXISTING TASK - Load saved values
+      // --------------------------------------------------------
+      _initializeForEditMode();
     } else {
-      _category = CategoryConstants.categories.first;
-      _dueDate = DateTime.now().add(const Duration(days: 1));
-      _dueTime = TimeOfDay.now();
-      _priority = PriorityConstants.medium; // Medium priority by default
-      _duration = 30; // Default duration
-      
-      // Auto-guess duration when title changes
-      _titleController.addListener(_guessDuration);
+      // --------------------------------------------------------
+      // CREATING NEW TASK - Set defaults & enable AI
+      // --------------------------------------------------------
+      _initializeForCreateMode();
     }
   }
   
-  void _guessDuration() {
-    if (_titleController.text.isNotEmpty && widget.task == null) {
-      final taskService = Provider.of<TaskService>(context, listen: false);
-      final guessedDuration = taskService.guessDuration(_titleController.text);
-      
+  /// Initialize state for editing an existing task
+  void _initializeForEditMode() {
+    // Load existing task data into state
+    _titleController.text = widget.task!.title;
+    _category = widget.task!.category;
+    _dueDate = widget.task!.dueDate;
+    _dueTime = TimeOfDay.fromDateTime(widget.task!.dueDate);
+    _priority = widget.task!.priority;
+    _duration = widget.task!.duration;
+    
+    // AI is disabled for editing (already has values)
+    _isAIEnabled = false;
+    _showAISuggestions = false;
+    _aiSuggestion = null;
+  }
+  
+  /// Initialize state for creating a new task with AI assistance
+  void _initializeForCreateMode() {
+    // Set default values
+    _category = CategoryConstants.categories.first;
+    _dueDate = DateTime.now().add(const Duration(days: 1));
+    _dueTime = TimeOfDay.now();
+    _priority = PriorityConstants.medium;
+    _duration = 30;
+    
+    // Enable AI for new tasks
+    _isAIEnabled = true;
+    _showAISuggestions = false;
+    _aiSuggestion = null;
+    
+    // --------------------------------------------------------
+    // AI LISTENER: Attach listener to analyze title changes
+    // This triggers AI analysis whenever user types
+    // --------------------------------------------------------
+    _titleController.addListener(_onTitleChangedForAI);
+  }
+
+  // ============================================================
+  // AI METHODS
+  // ============================================================
+  
+  /// Called whenever the title text changes
+  /// Triggers AI analysis if conditions are met
+  void _onTitleChangedForAI() {
+    // Only run AI if:
+    // 1. AI is enabled (new task mode)
+    // 2. Title has at least 3 characters
+    if (_isAIEnabled && _titleController.text.length >= 3) {
+      // Run AI analysis on the title
+      _runAIAnalysis(_titleController.text);
+    } else {
+      // Hide suggestions if title is too short
       setState(() {
-        _duration = guessedDuration;
+        _showAISuggestions = false;
       });
     }
   }
+  
+  /// Run AI analysis on the given title
+  /// Updates state with AI suggestions
+  void _runAIAnalysis(String title) {
+    // Get AI suggestions using the AI Service
+    final suggestion = AIService.analyzeTask(title);
+    
+    // Update state with new suggestions
+    setState(() {
+      _aiSuggestion = suggestion;
+      _showAISuggestions = true;
+    });
+  }
+  
+  /// Apply all AI suggestions to the form
+  void _applyAllAISuggestions() {
+    if (_aiSuggestion == null) return;
+    
+    setState(() {
+      // Apply priority suggestion
+      _priority = _aiSuggestion!.priority.priority;
+      
+      // Apply duration suggestion
+      _duration = _aiSuggestion!.duration.duration;
+      
+      // Apply category suggestion
+      _category = _aiSuggestion!.category.category;
+      
+      // Hide the suggestions card after applying
+      _showAISuggestions = false;
+    });
+    
+    // Show feedback to user
+    _showAIAppliedFeedback();
+  }
+  
+  /// Apply only the priority suggestion
+  void _applyPrioritySuggestion() {
+    if (_aiSuggestion == null) return;
+    setState(() {
+      _priority = _aiSuggestion!.priority.priority;
+    });
+  }
+  
+  /// Apply only the duration suggestion
+  void _applyDurationSuggestion() {
+    if (_aiSuggestion == null) return;
+    setState(() {
+      _duration = _aiSuggestion!.duration.duration;
+    });
+  }
+  
+  /// Apply only the category suggestion
+  void _applyCategorySuggestion() {
+    if (_aiSuggestion == null) return;
+    setState(() {
+      _category = _aiSuggestion!.category.category;
+    });
+  }
+  
+  /// Show snackbar feedback when AI suggestions are applied
+  void _showAIAppliedFeedback() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.auto_awesome, color: Colors.white),
+            SizedBox(width: 8),
+            Text('AI suggestions applied!'),
+          ],
+        ),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.deepPurple,
+      ),
+    );
+  }
+  
+  /// Dismiss AI suggestions card
+  void _dismissAISuggestions() {
+    setState(() {
+      _showAISuggestions = false;
+    });
+  }
 
+  // ============================================================
+  // DISPOSE - Clean up resources
+  // ============================================================
   @override
   void dispose() {
+    // Remove listener before disposing
+    if (_isAIEnabled) {
+      _titleController.removeListener(_onTitleChangedForAI);
+    }
     _titleController.dispose();
     super.dispose();
   }
@@ -195,6 +345,10 @@ class _TaskFormState extends State<TaskForm> {
                 autofocus: widget.task == null,
               ),
               const SizedBox(height: UIConstants.defaultPadding),
+              
+              // AI Suggestions Card (only show for new tasks)
+              if (_showAISuggestions && _aiSuggestion != null && widget.task == null)
+                _buildAISuggestionsCard(),
               
               // Category dropdown
               DropdownButtonFormField<String>(
@@ -359,6 +513,147 @@ class _TaskFormState extends State<TaskForm> {
           ),
         ),
       ),
+    );
+  }
+  
+  // Build AI Suggestions Card
+  Widget _buildAISuggestionsCard() {
+    return Card(
+      margin: const EdgeInsets.only(bottom: UIConstants.defaultPadding),
+      color: Colors.deepPurple.shade50,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.deepPurple.shade200),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header
+            Row(
+              children: [
+                Icon(Icons.auto_awesome, color: Colors.deepPurple.shade700, size: 20),
+                const SizedBox(width: 8),
+                Text(
+                  'AI Suggestions',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.deepPurple.shade700,
+                    fontSize: 14,
+                  ),
+                ),
+                const Spacer(),
+                // Apply All button
+                TextButton.icon(
+                  onPressed: _applyAllAISuggestions,
+                  icon: const Icon(Icons.check_circle, size: 16),
+                  label: const Text('Apply All'),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.deepPurple,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                  ),
+                ),
+                // Close button
+                IconButton(
+                  icon: const Icon(Icons.close, size: 18),
+                  onPressed: _dismissAISuggestions,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+              ],
+            ),
+            const Divider(),
+            
+            // Priority suggestion
+            _buildSuggestionRow(
+              icon: Icons.flag,
+              label: 'Priority',
+              value: _aiSuggestion!.priority.priorityText,
+              color: PriorityConstants.priorityColors[_aiSuggestion!.priority.priority] ?? Colors.grey,
+              reason: _aiSuggestion!.priority.reason,
+              onApply: _applyPrioritySuggestion,
+            ),
+            const SizedBox(height: 8),
+            
+            // Duration suggestion
+            _buildSuggestionRow(
+              icon: Icons.timer,
+              label: 'Duration',
+              value: _aiSuggestion!.duration.durationText,
+              color: Colors.blue,
+              reason: _aiSuggestion!.duration.reason,
+              onApply: _applyDurationSuggestion,
+            ),
+            const SizedBox(height: 8),
+            
+            // Category suggestion
+            _buildSuggestionRow(
+              icon: Icons.category,
+              label: 'Category',
+              value: _aiSuggestion!.category.category,
+              color: CategoryConstants.getCategoryColor(_aiSuggestion!.category.category),
+              reason: _aiSuggestion!.category.reason,
+              onApply: _applyCategorySuggestion,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  
+  // Build individual suggestion row
+  Widget _buildSuggestionRow({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+    required String reason,
+    required VoidCallback onApply,
+  }) {
+    return Row(
+      children: [
+        Icon(icon, size: 16, color: Colors.grey.shade600),
+        const SizedBox(width: 8),
+        Text(
+          '$label: ',
+          style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Text(
+            value,
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            reason,
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.grey.shade500,
+              fontStyle: FontStyle.italic,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        IconButton(
+          icon: Icon(Icons.add_circle_outline, size: 18, color: Colors.deepPurple.shade400),
+          onPressed: onApply,
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(),
+          tooltip: 'Apply this suggestion',
+        ),
+      ],
     );
   }
 } 

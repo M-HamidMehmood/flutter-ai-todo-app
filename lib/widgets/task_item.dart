@@ -135,23 +135,32 @@ class TaskItem extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 8, 
-                              vertical: 2,
+                              vertical: 3,
                             ),
                             decoration: BoxDecoration(
-                              color: CategoryConstants.getCategoryColor(task.category).withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(4),
-                              border: Border.all(
-                                color: CategoryConstants.getCategoryColor(task.category).withOpacity(0.5),
-                                width: 1,
-                              ),
+                              color: CategoryConstants.getCategoryColor(task.category),
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Text(
-                              task.category,
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: darkenColor(CategoryConstants.getCategoryColor(task.category)),
-                              ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  task.category == 'Work' ? Icons.work :
+                                  task.category == 'Study' ? Icons.school :
+                                  Icons.person,
+                                  size: 12,
+                                  color: Colors.white,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  task.category,
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -160,30 +169,31 @@ class TaskItem extends StatelessWidget {
                             size: 12,
                             color: isOverdue 
                                 ? Colors.red 
-                                : (isDueSoon ? Colors.orange : Colors.grey),
+                                : (isDueSoon ? Colors.orange : Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade400 : Colors.grey),
                           ),
                           const SizedBox(width: 4),
                           Text(
                             AppDateUtils.getRelativeDateString(task.dueDate),
                             style: TextStyle(
                               fontSize: 12,
+                              fontWeight: isOverdue || isDueSoon ? FontWeight.w600 : FontWeight.normal,
                               color: isOverdue 
                                   ? Colors.red 
-                                  : (isDueSoon ? Colors.orange : Colors.grey),
+                                  : (isDueSoon ? Colors.orange : Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade400 : Colors.grey),
                             ),
                           ),
                           const SizedBox(width: 8),
                           Icon(
                             Icons.timer_outlined,
                             size: 12,
-                            color: Colors.grey,
+                            color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade400 : Colors.grey,
                           ),
                           const SizedBox(width: 4),
                           Text(
                             '${task.duration} min',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
-                              color: Colors.grey,
+                              color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade400 : Colors.grey,
                             ),
                           ),
                         ],
@@ -192,18 +202,57 @@ class TaskItem extends StatelessWidget {
                   ),
                 ),
                 
-                // Right side
+                // Right side - Priority indicator with label
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    // Priority indicator
-                    Container(
-                      width: 8,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: task.isCompleted 
-                            ? Colors.grey.withOpacity(0.3) 
-                            : task.getPriorityColor(),
-                        borderRadius: BorderRadius.circular(4),
+                    // Priority badge with icon and text
+                    Tooltip(
+                      message: '${task.getPriorityText()} Priority',
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: task.isCompleted 
+                              ? Colors.grey.withOpacity(0.1) 
+                              : task.getPriorityColor().withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: task.isCompleted 
+                                ? Colors.grey.withOpacity(0.3) 
+                                : task.getPriorityColor().withOpacity(0.5),
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              task.priority == PriorityConstants.high
+                                  ? Icons.keyboard_double_arrow_up
+                                  : task.priority == PriorityConstants.medium
+                                      ? Icons.remove
+                                      : Icons.keyboard_double_arrow_down,
+                              size: 14,
+                              color: task.isCompleted 
+                                  ? Colors.grey 
+                                  : task.getPriorityColor(),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              task.getPriorityText(),
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: task.isCompleted 
+                                    ? Colors.grey 
+                                    : task.getPriorityColor(),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     

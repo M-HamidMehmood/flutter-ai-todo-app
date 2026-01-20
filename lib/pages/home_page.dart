@@ -95,14 +95,20 @@ class _HomePageState extends State<HomePage> {
             actions: [
               // Theme toggle
               Tooltip(
-                message: 'Toggle theme',
+                message: themeService.themeMode == ThemeMode.light
+                    ? 'Switch to Dark Mode'
+                    : themeService.themeMode == ThemeMode.dark
+                        ? 'Switch to System Mode'
+                        : 'Switch to Light Mode',
                 child: IconButton(
                   icon: AnimatedSwitcher(
                     duration: UIConstants.shortAnimationDuration,
                     child: Icon(
-                      themeService.themeMode == ThemeMode.system
-                          ? Icons.brightness_auto
-                          : Icons.brightness_3,
+                      themeService.themeMode == ThemeMode.light
+                          ? Icons.light_mode
+                          : themeService.themeMode == ThemeMode.dark
+                              ? Icons.dark_mode
+                              : Icons.brightness_auto,
                       key: ValueKey<ThemeMode>(themeService.themeMode),
                     ),
                   ),
